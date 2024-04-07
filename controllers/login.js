@@ -14,12 +14,12 @@ export default async function loginC(req, res) {
 
 		jwt.sign({ _id: info._id, username }, JWT_SECRET, (err, token) => {
 			if (err) throw err;
-			res.cookie("token", token, { maxAge: 1000 * 60 * 60 * 24 }) //24hrs
-				.json({
-					_id: info._id,
-					username,
-					message: `Logged in successfully as ${username}`,
-				});
+			res.json({
+				_id: info._id,
+				username,
+				message: `Logged in successfully as ${username}`,
+				token,
+			});
 		});
 	} catch (error) {
 		res.json({

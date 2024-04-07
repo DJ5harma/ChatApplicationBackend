@@ -35,7 +35,7 @@ app.use(
 app.post("/api/auth/Login", loginC);
 app.post("/api/auth/Register", registerC);
 app.post("/api/auth/Wall", wall);
-app.get("/api/get/messages", wall, getMessages);
+app.post("/api/messages", wall, getMessages);
 
 mongoose.connect(MONGO_URI).then(() => {
 	console.log("MongoDB connected");
@@ -48,91 +48,105 @@ const wss = new WebSocketServer({ server });
 const onlineUsers = new Set();
 
 wss.on("connection", (connection, req) => {
-	if (!req.headers.cookie) {
-		return;
-	}
-	const cookies = req.headers.cookie.split(";");
-	let token;
-	cookies.forEach(
-		(cookie) => cookie.startsWith("token=") && (token = cookie.slice(6))
-	); // Getting the token out of all the possible cookies
+	// if (!req.headers.cookie) {
+	// 	return;
+	// }
+	// const cookies = req.headers.cookie.split(";");
+	// cookies.forEach(
+	// 	(cookie) => cookie.startsWith("token=") && (token = cookie.slice(6))
+	// ); // Getting the token out of all the possible cookies
+	console.log("connected");
+	connection.addEventListener("message", async ({ data }) => {
+		const { token } = JSON.parse(data);
+		if (!token) return;
 
-	jwt.verify(token, JWT_SECRET, async (err, info) => {
-		// Verifying that the token is correct acc. to our secret
+		jwt.verify(token, JWT_SECRET, async (err, info) => {
+			// Verifying that the token is correct acc. to our secret
 
-		const users = (await User.find()).map(({ _id, username }) => ({
-			_id,
-			username,
-		})); // Getting all the users from mongoDB
+			const users = (await User.find()).map(({ _id, username }) => ({
+				_id,
+				username,
+			})); // Getting all the users from mongoDB
 
-		const { username, _id } = info; // Getting the username out of the verified token
+			const { username, _id } = info; // Getting the username out of the verified token
 
-		connection._id = _id; // storing the userId in connection object itself for future use
+			connection._id = _id; // storing the userId in connection object itself for future use
 
-		onlineUsers.add(username); // Marking this user online
+			onlineUsers.add(username); // Marking this user online
 
-		wss.clients.forEach((client) => {
-			client.send(
-				JSON.stringify({
-					type: "userOnline",
-					username,
-				})
-			);
-		}); // Telling every client about this new online user
-
-		connection.send(
-			JSON.stringify({
-				type: "allUsers",
-				users,
-				onlineUsers: [...onlineUsers],
-			})
-		); // Sending the newly connected user the data about all the users, and online users there are
-
-		connection.addEventListener("message", async ({ data }) => {
-			const { type, content, receiverId } = JSON.parse(data);
-
-			const senderId = connection._id;
-
-			switch (type) {
-				case "sendMessage":
-					const message = new Message({
-						senderId,
-						receiverId,
-						content,
-					});
-
-					wss.clients.forEach((connection) => {
-						if (
-							connection._id === senderId ||
-							connection._id === receiverId
-						) {
-							connection.send(
-								JSON.stringify({
-									type: "sendMessage",
-									message,
-								})
-							);
-						}
-					});
-					await message.save();
-
-					break;
-
-				default:
-					break;
-			}
-		});
-
-		connection.onclose = () => {
-			onlineUsers.delete(username); // Marking this user offline
 			wss.clients.forEach((client) => {
 				client.send(
 					JSON.stringify({
-						type: "userOffline",
+						type: "userOnline",
 						username,
 					})
 				);
+			}); // Telling every client about this new online user
+
+			connection.send(
+				JSON.stringify({
+					type: "allUsers",
+					users,
+					onlineUsers: [...onlineUsers],
+				})
+			); // Sending the newly connected user the data about all the users, and online users there are
+
+			connection.addEventListener("message", async ({ data }) => {
+				const { type, content, receiverId } = JSON.parse(data);
+
+				const senderId = connection._id;
+
+				switch (type) {
+					case "sendMessage":
+						const message = new Message({
+							senderId,
+							receiverId,
+							content,
+						});
+
+						wss.clients.forEach((connection) => {
+							if (
+								connection._id === senderId ||
+								connection._id === receiverId
+							) {
+								connection.send(
+									JSON.stringify({
+										type: "sendMessage",
+										message,
+									})
+								);
+							}
+						});
+						await message.save();
+
+						break;
+					case "newUser":
+						wss.clients.forEach(async (connection) => {
+							const newUser = await User.findById(senderId);
+							connection.send(
+								JSON.stringify({
+									type: "newUser",
+									newUser,
+								})
+							);
+						});
+						break;
+					default:
+						break;
+				}
 			});
-		}; // Telling every client about the user if it closes the connection
+
+			connection.onclose = () => {
+				onlineUsers.delete(username); // Marking this user offline
+				wss.clients.forEach((client) => {
+					client.send(
+						JSON.stringify({
+							type: "userOffline",
+							username,
+						})
+					);
+				});
+			}; // Telling every client about the user if it closes the connection
+		});
 	});
 });
