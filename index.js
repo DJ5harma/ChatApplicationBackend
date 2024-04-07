@@ -48,14 +48,6 @@ const wss = new WebSocketServer({ server });
 const onlineUsers = new Set();
 
 wss.on("connection", (connection, req) => {
-	// if (!req.headers.cookie) {
-	// 	return;
-	// }
-	// const cookies = req.headers.cookie.split(";");
-	// cookies.forEach(
-	// 	(cookie) => cookie.startsWith("token=") && (token = cookie.slice(6))
-	// ); // Getting the token out of all the possible cookies
-	console.log("connected");
 	connection.addEventListener("message", async ({ data }) => {
 		const { token } = JSON.parse(data);
 		if (!token) return;
