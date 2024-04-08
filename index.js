@@ -11,9 +11,8 @@ import registerC from "./controllers/register.js";
 import wall from "./utilities/authWall.js";
 
 import jwt from "jsonwebtoken";
-import User from "./models/user.model.js";
 import Message from "./models/message.model.js";
-import getMessages from "./controllers/getMessages.js";
+import getData from "./controllers/getData.js";
 
 dotenv.config();
 
@@ -35,7 +34,9 @@ app.use(
 app.post("/api/auth/Login", loginC);
 app.post("/api/auth/Register", registerC);
 app.post("/api/auth/Wall", wall);
-app.post("/api/messages", wall, getMessages);
+app.post("/api/data", wall, getData);
+
+// app.get("/api/users", getUsers);
 
 mongoose.connect(MONGO_URI).then(() => {
 	console.log("MongoDB connected");
@@ -53,12 +54,7 @@ wss.on("connection", (connection, req) => {
 		if (!token) return;
 
 		jwt.verify(token, JWT_SECRET, async (err, info) => {
-			// Verifying that the token is correct acc. to our secret
-
-			const users = (await User.find()).map(({ _id, username }) => ({
-				_id,
-				username,
-			})); // Getting all the users from mongoDB
+			// Verifying if the token is correct acc. to our secret
 
 			const { username, _id } = info; // Getting the username out of the verified token
 
@@ -77,11 +73,10 @@ wss.on("connection", (connection, req) => {
 
 			connection.send(
 				JSON.stringify({
-					type: "allUsers",
-					users,
+					type: "allOnlineUsers",
 					onlineUsers: [...onlineUsers],
 				})
-			); // Sending the newly connected user the data about all the users, and online users there are
+			); // Sending the newly connected user the data about all the online users
 
 			connection.addEventListener("message", async ({ data }) => {
 				const { type, content, receiverId } = JSON.parse(data);
@@ -112,17 +107,17 @@ wss.on("connection", (connection, req) => {
 						await message.save();
 
 						break;
-					case "newUser":
-						wss.clients.forEach(async (connection) => {
-							const newUser = await User.findById(senderId);
-							connection.send(
-								JSON.stringify({
-									type: "newUser",
-									newUser,
-								})
-							);
-						});
-						break;
+					// case "newUser":
+					// 	wss.clients.forEach(async (connection) => {
+					// 		const newUser = await User.findById(senderId);
+					// 		connection.send(
+					// 			JSON.stringify({
+					// 				type: "newUser",
+					// 				newUser,
+					// 			})
+					// 		);
+					// 	});
+					// 	break;
 					default:
 						break;
 				}

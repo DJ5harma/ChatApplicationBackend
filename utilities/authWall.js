@@ -3,14 +3,14 @@ import { jwtSecret as JWT_SECRET } from "../index.js";
 import User from "../models/user.model.js";
 
 export default async function wall(req, res, next) {
-	const { token } = req.body;
+	const { token, autoLogin } = req.body;
 	try {
 		if (!token) throw new Error("Cookie not found");
 
 		jwt.verify(token, JWT_SECRET, async (err, info) => {
 			if (err) throw err;
 			req.userId = info._id;
-			if (req.body.autoLogin) {
+			if (autoLogin) {
 				const user = await User.findById(info._id);
 
 				return res.json({
