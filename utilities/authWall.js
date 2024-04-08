@@ -5,7 +5,7 @@ import User from "../models/user.model.js";
 export default async function wall(req, res, next) {
 	const { token, autoLogin } = req.body;
 	try {
-		if (!token) throw new Error("Cookie not found");
+		if (!token) throw new Error("Auth token not found");
 
 		jwt.verify(token, JWT_SECRET, async (err, info) => {
 			if (err) throw err;

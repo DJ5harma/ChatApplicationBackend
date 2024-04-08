@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import mongoose from "mongoose";
@@ -21,7 +20,6 @@ const { PORT, MONGO_URI, CLIENT_URL, JWT_SECRET } = process.env;
 export const jwtSecret = JWT_SECRET;
 
 const app = express();
-app.use(cookieParser());
 app.use(express.json());
 app.use(
 	cors({
@@ -35,8 +33,6 @@ app.post("/api/auth/Login", loginC);
 app.post("/api/auth/Register", registerC);
 app.post("/api/auth/Wall", wall);
 app.post("/api/data", wall, getData);
-
-// app.get("/api/users", getUsers);
 
 mongoose.connect(MONGO_URI).then(() => {
 	console.log("MongoDB connected");
