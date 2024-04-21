@@ -75,7 +75,8 @@ wss.on("connection", (connection, req) => {
 			); // Sending the newly connected user the data about all the online users
 
 			connection.addEventListener("message", async ({ data }) => {
-				const { type, content, receiverId } = JSON.parse(data);
+				const { type, content, receiverId, offlineUserUsername } =
+					JSON.parse(data);
 
 				const senderId = connection._id;
 
@@ -103,6 +104,18 @@ wss.on("connection", (connection, req) => {
 						await message.save();
 
 						break;
+
+					case "userOffline":
+						onlineUsers.delete(username); // Marking this user offline
+						wss.clients.forEach((client) => {
+							client.send(
+								JSON.stringify({
+									type: "userOffline",
+									username: offlineUserUsername,
+								})
+							);
+						});
+
 					// case "newUser":
 					// 	wss.clients.forEach(async (connection) => {
 					// 		const newUser = await User.findById(senderId);
