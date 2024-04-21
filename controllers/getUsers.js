@@ -7,6 +7,8 @@ export default async function getUsers(req, res) {
 			username,
 		})); // Getting all the users from mongoDB
 
+		console.log(users);
+
 		return res.json({
 			users,
 		});

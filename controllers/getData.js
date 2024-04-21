@@ -8,10 +8,9 @@ export default async function getData(req, res) {
 		const messages = await Message.find({
 			$or: [{ senderId: userId }, { receiverId: userId }],
 		});
-		const users = (await User.find()).map(({ _id, username }) => ({
-			_id,
-			username,
-		})); // Getting all the users from mongoDB
+		const users = await User.find().select(["-password", "-updatedAt"]); // Getting all the users from mongoDB
+
+		console.log(users);
 
 		return res.json({
 			messages,
