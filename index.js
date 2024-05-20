@@ -15,8 +15,7 @@ import getData from "./controllers/getData.js";
 
 dotenv.config();
 
-const { MONGO_URI, CLIENT_URL, JWT_SECRET } = process.env;
-const PORT = process.env.PORT || 3000;
+const { MONGO_URI, CLIENT_URL, JWT_SECRET, PORT } = process.env;
 
 export const jwtSecret = JWT_SECRET;
 
