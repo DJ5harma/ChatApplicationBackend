@@ -20,15 +20,10 @@ const { MONGO_URI, CLIENT_URL, JWT_SECRET, PORT } = process.env;
 export const jwtSecret = JWT_SECRET;
 
 const app = express();
-app.use(
-	cors({
-		origin: CLIENT_URL,
-		optionsSuccessStatus: 200, // for legacy browser support
-	})
-);
+app.use(cors());
 app.use(express.json());
 app.get("/", (req, res) => {
-	res.send("Works");
+	res.send("CLIENT_URL: " + CLIENT_URL);
 });
 app.post("/api/auth/Login", loginC);
 app.post("/api/auth/Register", registerC);
