@@ -21,12 +21,7 @@ export const jwtSecret = JWT_SECRET;
 
 const app = express();
 app.use(express.json());
-app.use(
-	cors({
-		origin: CLIENT_URL,
-		optionssuccessstatus: 200,
-	})
-);
+app.use(cors());
 app.get("/api/test", (req, res) => {
 	res.send("Works");
 });
