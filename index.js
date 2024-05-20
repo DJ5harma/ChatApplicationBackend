@@ -15,13 +15,19 @@ import getData from "./controllers/getData.js";
 
 dotenv.config();
 
-const { PORT, MONGO_URI, CLIENT_URL, JWT_SECRET } = process.env;
+const { MONGO_URI, CLIENT_URL, JWT_SECRET } = process.env;
+const PORT = process.env.PORT || 3000;
 
 export const jwtSecret = JWT_SECRET;
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+	cors({
+		origin: CLIENT_URL,
+		optionssuccessstatus: 200,
+	})
+);
 app.get("/api/test", (req, res) => {
 	res.send("Works");
 });
