@@ -1,12 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "To use the website, go here: https://chat-application-frontend-drab.vercel.app",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "build": "echo 'No build step necessary'"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,9 +17,5 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.0",
     "ws": "^8.17.0"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": "20.x"
   }
 }
