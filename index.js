@@ -28,7 +28,9 @@ app.use(
 		credentials: true,
 	})
 );
-
+app.get("/api/test", (req, res) => {
+	res.send("Works");
+});
 app.post("/api/auth/Login", loginC);
 app.post("/api/auth/Register", registerC);
 app.post("/api/auth/Wall", wall);
