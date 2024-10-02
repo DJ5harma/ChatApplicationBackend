@@ -1,4 +1,4 @@
-Apparently, my free backend server's free credits have been exhausted 😅.
+Apparently, my backend server's free credits have been exhausted 😅.
 You can run this locally:
 
 Clone these 2 repos:
@@ -7,11 +7,13 @@ Backend GitHub repo: https://github.com/DJ5harma/ChatApplicationBackend
 
 Frontend GitHub repo: https://github.com/DJ5harma/ChatApplicationFrontend
 
-Make sure you have Node.js and MongoDB set up.
-Firstly, run "npm i" in both the clones..
-change the name of "sample.env" file in backend to ".env" 
-(you can also change .env's contents if you wish, like using a MongoAtlas URI, or a custom JWT_SECRET)..
-then run "npm run dev" in the backend directory's root, 
-and then "npm run dev" in the frontend directory's root
+-Make sure you have Node.js and MongoDB set up.
+-Firstly, run "npm i" in both the clones..
+-Change the name of "sample.env" files in backend and frontend directories to ".env", 
+--(you can also change .env's contents if you wish, like using a MongoAtlas URI, or a custom JWT_SECRET, 
+    or change PORTs if your system is already using them, etc.)..
+-Then run "npm run dev" in the backend directory's root, 
+-Then run "npm run dev" in the frontend directory's root
 
-visit the URL Vite gives you on your browser and it shall work.
+visit the URL Vite gives you (something similar to localhost:5173) on your browser and it shall work.
+-make sure the URLs in .env match the one Vite uses.
