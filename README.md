@@ -1,5 +1,6 @@
-Apparently, my backend server's free credits have been exhausted 😅.
-You can run this locally:
+Apparently, I'm running out of free credits on my backend server provider 😅 so the app may fail to work beyond the Login form when you see this, so run locally :
+
+# To run this locally:
 
 Clone these 2 repos:
 
